@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RFM Cohort Segmentation Simulation</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; margin: 40px; background-color: #f5f5f5; }
+        .container { max-width: 750px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        h1 { color: #5d4037; text-align: center; border-bottom: 3px solid #5d4037; padding-bottom: 10px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #333; }
+        input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { background-color: #5d4037; color: white; padding: 15px 20px; border: none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 30px; font-size: 18px; font-weight: bold; }
+        button:hover { background-color: #3e2723; }
+        #result_rfm { margin-top: 30px; padding: 25px; border-radius: 8px; font-size: 1.1em; text-align: left; line-height: 1.6; border: 1px dashed #5d4037; }
+        .explanation { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; font-size: 0.9em; color: #777; text-align: justify; }
+        .segment-key { font-weight: bold; padding: 5px 10px; border-radius: 4px; display: inline-block; margin-top: 10px; }
+        .champion { background-color: #d4edda; color: #155724; }
+        .at-risk { background-color: #fff3cd; color: #856404; }
+        .hibernating { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>8. RFM Cohort Segmentation Simulation (Adapted for Education)</h1>
+    
+    <p class="explanation">
+        <strong>Method Explanation:</strong> RFM (Recency, Frequency, Monetary) is a core direct marketing tool adapted here for education. It segments students into meaningful groups (Cohorts) based on three behavioral scores: **Recency** (last LMS activity), **Frequency** (campus/resource visits), and **Monetary** (net tuition value). This allows for highly personalized and effective retention campaigns. 
+    </p>
+
+    <label for="recency">1. Recency Score (1-5, 5=Most Recent Login):</label>
+    <input type="number" id="recency" value="3" min="1" max="5" step="1">
+    
+    <label for="frequency">2. Frequency Score (1-5, 5=Most Frequent Resource Use):</label>
+    <input type="number" id="frequency" value="2" min="1" max="5" step="1">
+
+    <label for="monetary">3. Monetary Score (1-5, 5=Highest Net Tuition Value):</label>
+    <input type="number" id="monetary" value="5" min="1" max="5" step="1">
+
+    <button onclick="segmentRFM()">Segment Student</button>
+
+    <div id="result_rfm">
+        Enter the R, F, and M scores (1-5) to identify the student's cohort.
+    </div>
+</div>
+
+<script>
+// --- RFM Cohort Segmentation Simulation in JavaScript ---
+
+function getRFMSegment(r, f, m) {
+    if (r >= 4 && f >= 4 && m >= 4) {
+        return { name: "Champions", description: "Highly engaged, high value, recent activity. Ideal for success stories and peer mentoring.", class: "champion" };
+    } 
+    if (r >= 4 && f >= 4 && m < 3) {
+        return { name: "Engaged, Needs Funding", description: "Highly engaged but low monetary value. Target for scholarship/alumni funding outreach.", class: "at-risk" };
+    }
+    if (r >= 4 && f < 2) {
+        return { name: "Potential Loyalist (Low Frequency)", description: "Recently logged in but rarely uses resources. Target for highly personalized resource prompts.", class: "at-risk" };
+    }
+    if (r < 2 && f < 2) {
+        return { name: "Hibernating/High Churn Risk", description: "Inactivity on all fronts. Requires immediate, high-touch, personalized outreach (e.g., phone call).", class: "hibernating" };
+    }
+    if (r < 2 && f >= 3) {
+        return { name: "Slipping (Recent Activity Dropped)", description: "Used to be frequent, but R is low. Needs a quick, friendly 'check-in' to prevent further drop.", class: "hibernating" };
+    }
+    if (m === 5 && r < 3) {
+        return { name: "High Value, High Risk", description: "Financially valuable but showing signs of disengagement (R is low). Top priority for retention specialist.", class: "hibernating" };
+    }
+    
+    return { name: "Mid-Level Average", description: "Meets basic thresholds. Continue standard automated communication and monitoring.", class: "" };
+}
+
+function segmentRFM() {
+    // 1. Collect Data
+    const r = parseInt(document.getElementById('recency').value);
+    const f = parseInt(document.getElementById('frequency').value);
+    const m = parseInt(document.getElementById('monetary').value);
+
+    // Basic Validation
+    if (isNaN(r) || isNaN(f) || isNaN(m) || r < 1 || f < 1 || m < 1 || r > 5 || f > 5 || m > 5) {
+        document.getElementById('result_rfm').innerHTML = "Error: Please ensure all scores are between 1 and 5.";
+        return;
+    }
+
+    // 2. Segmentation
+    const segment = getRFMSegment(r, f, m);
+
+    // 3. Output and Detailed Interpretation
+    const resultDiv = document.getElementById('result_rfm');
+    resultDiv.className = segment.class;
+
+    let message = `<h2>RFM SEGMENTATION RESULT</h2>`;
+    message += `<p><strong>RFM Score:</strong> ${r}-${f}-${m}</p>`;
+    message += `<p><strong>Identified Cohort:</strong> <span class="segment-key ${segment.class}">${segment.name}</span></p>`;
+    message += `<p><strong>Cohort Description:</strong> ${segment.description}</p>`;
+    
+    message += `<h3>STRATEGIC MARKETING RECOMMENDATION</h3>`;
+    
+    switch (segment.name) {
+        case "Champions":
+            message += `<p><strong>Campaign Focus:</strong> **Advocacy & Upselling.** Encourage them to participate in student testimonial videos and offer tailored information on advanced degrees (e.g., Master's programs).</p>`;
+            break;
+        case "Hibernating/High Churn Risk":
+            message += `<p><strong>Campaign Focus:</strong> **Crisis Intervention.** Do not use automated emails. Initiate a personal phone call from an advisor or retention specialist within 24 hours. The goal is re-engagement and barrier removal.</p>`;
+            break;
+        case "High Value, High Risk":
+            message += `<p><strong>Campaign Focus:</strong> **Priority Retention.** Assign a dedicated high-touch support liaison. Offer proactive, high-level resources (e.g., executive coaching, mental health services) to protect the high CLV.</p>`;
+            break;
+        case "Engaged, Needs Funding":
+            message += `<p><strong>Campaign Focus:</strong> **Financial Nurturing.** Target with information on small grants, emergency aid, and part-time campus employment opportunities. The engagement is there; remove the financial barrier.</p>`;
+            break;
+        default:
+            message += `<p><strong>Campaign Focus:</strong> **Standardized Drip Campaign.** Use automated systems to send relevant content based on their program (e.g., career fair reminders, study tips) to maintain engagement.</p>`;
+    }
+    
+    resultDiv.innerHTML = message;
+}
+</script>
+
+</body>
+</html>
